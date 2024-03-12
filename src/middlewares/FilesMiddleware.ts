@@ -1,37 +1,31 @@
-import multer from "multer";
-import path from "path";
-import * as dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
+import * as dotenv from "dotenv";
 
 dotenv.config();
 
 interface RequestFileExtend {
   files?: {
-    file: any
-  }
+    file: any;
+  };
 }
 
-type RequestFile = RequestFileExtend & Request
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, process.env.ABSOLUTE_SAVE_PATH);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${file.originalname}${path.extname(file.originalname)}`); // anexa a extensão do arquivo
-  },
-});
-
-const upload = multer({ storage: storage });
+type RequestFile = RequestFileExtend & Request;
 
 class FilesMiddleware {
-  public uploadMiddleware = upload.single("file");
-
-  public fileVerifier = (req: RequestFile, res: Response, next: NextFunction) => {
+  public fileVerifier = (
+    req: RequestFile,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.files || !req.files?.file) {
-      res.status(400).json({error: "Arquivo 'file' não encontrado, verifique se 'file' foi inserido no form."})
+      res.status(400).json({
+        error:
+          "Arquivo 'file' não encontrado, verifique se 'file' foi inserido no form.",
+      });
+    } else {
+      next();
     }
-  }
+  };
 }
 
 export default new FilesMiddleware();

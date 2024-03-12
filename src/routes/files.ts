@@ -1,9 +1,12 @@
 import { Router } from "express";
 import FilesController from "../controllers/FilesController";
 import FilesMiddleware from "../middlewares/FilesMiddleware";
+import { parse } from "express-form-data";
 
 const routes = Router();
 
-routes.post("/", FilesMiddleware.fileVerifier, FilesMiddleware.uploadMiddleware, FilesController.save);
+const formDataMiddleware = parse();
+
+routes.post("/", formDataMiddleware, FilesMiddleware.fileVerifier, FilesController.save);
 
 export default routes;
